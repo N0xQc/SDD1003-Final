@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <title>Rad-dar</title>
+</head>
+<body>
+    <button id="viewCreate" class="crud-btn create-btn"><i class="fa-solid fa-plus"></i></button>
+    <button id="viewHome" class="crud-btn create-btn"><i class="fa-solid fa-eye"></i></button>
+    <button id="viewStatistics" class="crud-btn stats-btn"><i class="fa-solid fa-chart-bar"></i></button>
+    <div id="logoHeader">
+        <a href="index.html" class="header-link">
+            <h1>Rad-dar</h1>
+            <img src="assets/radar.png" alt="" class="logo"> 
+        </a>
+    </div>
+    <div id="homeContainer" class="container">
+        <h2>Collection de jeux Steam</h2>
+        <div id="searchContainer">
+            <label class="switch">
+                <input type="checkbox" id="modeToggle">
+                <span class="slider round"></span>
+            </label>
+           <div class="search-bar">
+                <input type="text" id="searchInput" class="search-input" placeholder="Recherche...">
+                <div id="autocompleteList" class="autocomplete-items"></div>
+            </div>
+        </div>
+        
+        <div class="results">
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Developpeur</th>
+                        <th>Positifs</th>
+                        <th>Negatifs</th>
+                        <th class="empty-item"></th>
+                        <th class="empty-item"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Results will appear here -->
+                    <tr>
+                        <td>1</td>
+                        <td>Example Game</td>
+                        <td>Example Developer</td>
+                        <td>100</td>
+                        <td>20</td>
+                        <td><button class="crud-btn edit-btn"><i class="fa-solid fa-pen"></i></button></td>
+                        <td><button class="crud-btn delete-btn"><i class="fa-solid fa-trash"></i></button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="creationContainer" class="container crud-container">
+        <h2>Nouveau Jeu</h2>
+        <form id="creationForm" action="POST" class="crud-form">
+            <input class="creationInput" type="text" id="gameName" placeholder="Nom" required>
+            <input class="creationInput" type="text" id="gameDeveloper" placeholder="Developpeur" required>
+            <input class="creationInput" type="number" id="gamePositive" placeholder="Avis positifs" required>
+            <input class="creationInput" type="number" id="gameNegative" placeholder="Avis negatifs" required>
+            <button class="creationInput add-btn" type="submit">Ajouter</button>
+        </form>
+    </div>
+    <div id="editingContainer" class="container crud-container">
+        <h2>Modifier Jeu</h2>
+        <form id="editingForm" action="POST" class="crud-form">
+            <input class="creationInput" type="text" id="editGameName" placeholder="Nom" required>
+            <input class="creationInput" type="text" id="editGameDeveloper" placeholder="Developpeur" required>
+            <input class="creationInput" type="number" id="editGamePositive" placeholder="Avis positifs" required>
+            <input class="creationInput" type="number" id="editGameNegative" placeholder="Avis negatifs" required>
+            <button class="creationInput add-btn" type="submit">Modifier</button>
+        </form>
+
+    </div>
+    <div id="statisticsContainer" class="container crud-container">
+        <h2>Statistiques</h2>
+        <div id="graphContainer">
+            <img src="" alt="" id="statisticsGraph">
+        </div>
+        <div id="statisticsInterpretation" class="statistics-interpretation"></div>
+    </div>
+
+    <script src="https://kit.fontawesome.com/d29c8e5768.js" crossorigin="anonymous"></script>
+    <script src="js/data.js"></script>
+</body>
+</html>
+    
