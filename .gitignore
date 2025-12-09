@@ -1,0 +1,57 @@
+# ----------------------------------------
+# 1. Dependency Directories (Crucial!)
+# ----------------------------------------
+
+# Node.js
+/node_modules
+
+# Python
+# Virtual environment directory (common names)
+/venv
+/env
+__pycache__/
+
+# ----------------------------------------
+# 2. Environment Variables & Credentials
+# ----------------------------------------
+
+# Hide MongoDB URI, API Keys, etc.
+.env
+.env.local
+.env.*.local
+
+# ----------------------------------------
+# 3. Build & Output Files
+# ----------------------------------------
+
+# Node.js/Web build output
+/dist
+/build
+
+# Python compilation/logs
+*.pyc
+*.log
+/htmlcov
+/dist
+/build
+
+# ----------------------------------------
+# 4. Operating System Files
+# ----------------------------------------
+
+.DS_Store # macOS
+Thumbs.db # Windows
+
+# ----------------------------------------
+# 5. IDE and Editor Files (Optional)
+# ----------------------------------------
+
+.vscode/ # VS Code settings (optional, ignore if specific to your local setup)
+.idea/ # IntelliJ / PyCharm settings
+
+# ----------------------------------------
+# 6. Database Artifacts
+# ----------------------------------------
+
+*.sqlite
+# Any temporary database files generated locally

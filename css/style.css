@@ -1,0 +1,349 @@
+:root {
+    --background-color: #100f0f;
+    --foreground-color: #151515;
+    --text-color: #e0e0e0;
+    --text-secondary-color: #0aa11e;
+    --primary-color: #12721f;
+}
+
+@font-face {
+    font-family: 'Chernobyl';
+    src: url('../assets/Chernobyl.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Digital-7';
+    src: url('../assets/digital-7/digital-7.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: var(--background-color);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--foreground-color);
+    padding: 0 30px 30px 30px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#logoHeader {
+    background-color: var(--foreground-color);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 20px 0 20px;
+    border-radius: 8px 8px 0 0;
+}
+
+.header-link {
+    text-decoration: none;
+    position: relative;
+}
+.header-link:hover {
+    background-color: inherit;
+}
+
+.logo {
+    position: relative;
+    display: block;
+    margin: -140px auto 0 auto;
+    width: 120px;
+    height: auto;
+    z-index: 5;
+}
+
+h1 {
+    color: var(--text-color);
+    margin: 20px 0 40px 0;
+    text-align: center;
+    font-size: 60px;
+    font-family: Chernobyl, sans-serif;
+    z-index: 10;
+    position: relative;
+}
+h2 {
+    color: var(--text-secondary-color);
+    margin-bottom: 30px;
+    text-align: center;
+    font-size: 20px;
+    font-family: Digital-7, sans-serif;
+}
+
+#searchContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: row; 
+}
+
+
+/* The switch - the box around the slider */
+.switch {
+    margin: auto;
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: var(--primary-color);
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px var(--primary-color);
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+} 
+
+.search-bar {
+    width: calc(100% - 88px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 10px auto;
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: #111;
+    border: 1px solid #333;
+    color: var(--text-color);
+    font-size: 16px;
+    font-family: Digital-7, sans-serif;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.results {
+    width: 100%;
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    font-family: Digital-7, sans-serif;
+    color: var(--text-secondary-color);
+}
+
+.empty-item {
+    width: 50px;
+}
+
+.crud-btn {
+    background: none;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+    color: var(--text-color);
+}
+
+#viewHome {
+    display: none;
+}
+
+.create-btn {
+    position: absolute;
+    top: 20px;
+    right: 10px;   
+    font-size: 24px;
+    background-color: var(--primary-color);
+}
+
+.stats-btn {
+    position: absolute;
+    top: 70px;
+    right: 10px;   
+    font-size: 24px;
+    background-color: var(--primary-color);
+}
+
+.edit-btn {
+    background-color: var(--primary-color);
+}
+
+.delete-btn {
+    background-color: #b84646;
+}
+
+th {
+    background: var(--background-color);
+    font-size: 24px;
+    font-weight: bolder;
+    color: var(--text-secondary-color);
+}
+
+tr:nth-child(even) {
+    background: #222;
+}
+
+tr:hover {
+    background: #333;
+}
+
+a {
+    color: var(--text-secondary-color);
+    text-decoration: none;
+    padding: 6px 12px 6px 12px;
+    font-family: Digital-7, sans-serif;
+}
+
+a:hover {
+    color: var(--text-secondary-color);
+    background-color: #222;
+    cursor: pointer;
+    font-family: Digital-7, sans-serif;
+}
+
+.autocomplete-items {
+    visibility: collapse;
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    width: 1145px;
+    padding: 6px 0;
+    font-size: 16px;
+    border-radius: 2px;
+    z-index: 99;
+    top: 30%;
+    left: calc((100% - 1145px) / 2);
+    right: 0;
+    background-color: #111;
+}
+
+#homeContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.crud-container {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+}
+
+.crud-form {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+.creationInput {
+    margin: auto;
+    width: 200px;
+    padding: 10px;
+    font-size: 16px;
+    font-family: Digital-7, sans-serif;
+}
+
+.add-btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+#statisticsGraph {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+    border: var(--primary-color) 5px solid;
+    border-radius: 4px;
+}
+
+.statistics-interpretation {
+    color: var(--text-color);
+    font-size: 16px;
+    font-family: Digital-7, sans-serif;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+li {
+    list-style-type: none;
+    margin: 10px 0;
+    text-align: start;
+}
+
+strong {
+    color: var(--text-secondary-color);
+}
