@@ -1,59 +1,59 @@
 // data.js (Code de navigateur/Front-end)
 
 // 1. [ AFFICHAGE ]
-document.addEventListener('DOMContentLoaded', () => {
-    // DÉfinir la fonction pour rÉcupÉrer les donnÉes
-    const fetchGames = async () => {
-        try {
-            // Appelle l'endpoint API Node.js/Express
-            const response = await fetch('http://localhost:3000/games'); 
-            // ... (reste du code fetchGames) ...
-            
-            if (!response.ok) {
-                throw new Error(`Erreur HTTP! Statut: ${response.status}`);
-            }
-
-            const games = await response.json(); 
-            console.log('DonnÉes rÉcupÉrÉes:', games); 
-
-            populateTable(games);
-
-        } catch (error) {
-            console.error('Erreur lors de la rÉcupÉration des jeux:', error);
-            const tableBody = document.getElementById('tableBody');
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Erreur de connexion a l'API ( serveur Node.js non demarre ou CORS ).</td></tr>`;
+// DÉfinir la fonction pour rÉcupÉrer les donnÉes (global scope)
+const fetchGames = async () => {
+    try {
+        // Appelle l'endpoint API Node.js/Express
+        const response = await fetch('http://localhost:3000/games'); 
+        // ... (reste du code fetchGames) ...
+        
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP! Statut: ${response.status}`);
         }
-    };
 
-    // DÉfinir la fonction pour remplir la table
-    const populateTable = (games) => {
+        const games = await response.json(); 
+        console.log('DonnÉes rÉcupÉrÉes:', games); 
+
+        populateTable(games);
+
+    } catch (error) {
+        console.error('Erreur lors de la rÉcupÉration des jeux:', error);
         const tableBody = document.getElementById('tableBody');
-        tableBody.innerHTML = ''; 
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Erreur de connexion a l'API ( serveur Node.js non demarre ou CORS ).</td></tr>`;
+    }
+};
 
-        if (games.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Aucun jeu trouve dans la base de donnees.</td></tr>`;
-            return;
-        }
+// DÉfinir la fonction pour remplir la table (global scope)
+const populateTable = (games) => {
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = ''; 
 
-        games.forEach((game, index) => {
-            const row = document.createElement('tr');
-            
-            // Note: Vous n'avez pas besoin d'utiliser l'ID de MongoDB dans cette version simple
-            
-            row.innerHTML = `
-                <td>${index + 1}</td> 
-                <td>${game.name || 'N/A'}</td>
-                <td>${game.developer || 'N/A'}</td>
-                <td>${game.positive || 0}</td>
-                <td>${game.negative || 0}</td>
-                <td><button class="crud-btn edit-btn" data-id="${game._id}"><i class="fa-solid fa-pen"></i></button></td>
-                <td><button class="crud-btn delete-btn" data-id="${game._id}"><i class="fa-solid fa-trash"></i></button></td>
-            `;
-            
-            tableBody.appendChild(row);
-        });
-    };
+    if (games.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Aucun jeu trouve dans la base de donnees.</td></tr>`;
+        return;
+    }
 
+    games.forEach((game, index) => {
+        const row = document.createElement('tr');
+        
+        // Note: Vous n'avez pas besoin d'utiliser l'ID de MongoDB dans cette version simple
+        
+        row.innerHTML = `
+            <td>${index + 1}</td> 
+            <td>${game.name || 'N/A'}</td>
+            <td>${game.developer || 'N/A'}</td>
+            <td>${game.positive || 0}</td>
+            <td>${game.negative || 0}</td>
+            <td><button class="crud-btn edit-btn" data-id="${game._id}"><i class="fa-solid fa-pen"></i></button></td>
+            <td><button class="crud-btn delete-btn" data-id="${game._id}"><i class="fa-solid fa-trash"></i></button></td>
+        `;
+        
+        tableBody.appendChild(row);
+    });
+};
+
+document.addEventListener('DOMContentLoaded', () => {
     // Lancer la rÉcupÉration des donnÉes au chargement de la page
     fetchGames();
 });
