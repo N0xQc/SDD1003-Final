@@ -59,6 +59,7 @@ def calculate_n_plot_statistics():
     plt.title(f'Fonctions de Distribution Empirique vs Théorique pour "{VARIABLE_TO_ANALYZE}"')
     plt.xlabel(VARIABLE_TO_ANALYZE)
     plt.ylabel('Probabilité Cumultative')
+    plt.xlim(0, 800000)  # Limiter l'axe X à 800000
     plt.legend()
     plt.grid(True, linestyle='--', alpha=0.6)
 

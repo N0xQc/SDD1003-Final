@@ -34,7 +34,14 @@ const populateTable = (games) => {
         return;
     }
 
-    games.forEach((game, index) => {
+    // Trier les jeux par avis positifs (du plus élevé au plus bas)
+    const sortedGames = [...games].sort((a, b) => {
+        const aPositive = a.positive || 0;
+        const bPositive = b.positive || 0;
+        return bPositive - aPositive;
+    });
+
+    sortedGames.forEach((game, index) => {
         const row = document.createElement('tr');
         
         row.innerHTML = `
