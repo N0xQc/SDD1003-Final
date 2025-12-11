@@ -4,9 +4,9 @@ from pymongo import MongoClient
 import pymongo
 from sentence_transformers import SentenceTransformer
 
-# Load environment variables from .env file
+# Charger les variables d'environnement
 load_dotenv()
-MONGO_URI = os.getenv("MONGODB_URI")  # Changed from MONGO_URI to MONGODB_URI
+MONGO_URI = os.getenv("MONGODB_URI") 
 DB_NAME = 'steam_data'
 COLLECTION_NAME = 'games'
 EMBEDDING_FIELD = 'combined_embedding' # Nouveau champ pour stocker les embeddings dans MongoDB

@@ -3,7 +3,6 @@ const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors = require('cors');
 const path = require('path');
-// fetch is built-in in Node.js 18+, no import needed
 require('dotenv').config();
 
 const app = express();

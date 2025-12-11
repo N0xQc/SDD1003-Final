@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 import numpy as np
 import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend before importing pyplot
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 from scipy.stats import norm
 from io import BytesIO

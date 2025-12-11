@@ -1,7 +1,7 @@
 // data.js (Code de navigateur/Front-end)
 
 // 1. [ AFFICHAGE ]
-// DÉfinir la fonction pour rÉcupÉrer les donnÉes (global scope)
+// Définir la fonction pour récupérer les données (global scope)
 const fetchGames = async () => {
     try {
         // Appelle l'endpoint API Node.js/Express
@@ -13,18 +13,18 @@ const fetchGames = async () => {
         }
 
         const games = await response.json(); 
-        console.log('DonnÉes rÉcupÉrÉes:', games); 
+        console.log('Données récupérées:', games); 
 
         populateTable(games);
 
     } catch (error) {
-        console.error('Erreur lors de la rÉcupÉration des jeux:', error);
+        console.error('Erreur lors de la récupération des jeux:', error);
         const tableBody = document.getElementById('tableBody');
         tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Erreur de connexion a l'API ( serveur Node.js non demarre ou CORS ).</td></tr>`;
     }
 };
 
-// DÉfinir la fonction pour remplir la table (global scope)
+// Définir la fonction pour remplir la table (global scope)
 const populateTable = (games) => {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = ''; 
@@ -36,8 +36,6 @@ const populateTable = (games) => {
 
     games.forEach((game, index) => {
         const row = document.createElement('tr');
-        
-        // Note: Vous n'avez pas besoin d'utiliser l'ID de MongoDB dans cette version simple
         
         row.innerHTML = `
             <td>${index + 1}</td> 
@@ -54,7 +52,7 @@ const populateTable = (games) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Lancer la rÉcupÉration des donnÉes au chargement de la page
+    // Lancer la récupération des données au chargement de la page
     fetchGames();
 });
 
@@ -91,7 +89,7 @@ async function vectorSearchGames(query) {
     }
 }
 
-// GÉrer le mode de recherche (simple vs vectorielle)
+// Gérer le mode de recherche (simple vs vectorielle)
 const searchModeToggle = document.getElementById('modeToggle');
 searchModeToggle.addEventListener('change', () => {
     const isVectorSearch = searchModeToggle.checked;
@@ -105,7 +103,7 @@ searchModeToggle.addEventListener('change', () => {
     }
 });
 
-// Remplir la table avec le rÉsultat de la recherche
+// Remplir la table avec le résultat de la recherche
 const populateTableSearch = (game) => {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
@@ -121,7 +119,7 @@ const populateTableSearch = (game) => {
     tableBody.appendChild(row);
 };
 
-// GÉrer l'autocomplÉtion et la recherche en temps rÉel
+// Gérer l'autocomplétion et la recherche en temps réel
 document.getElementById('searchInput').addEventListener('input', async (event) => {
     const query = event.target.value;
     if (query.length < 2) {
@@ -154,7 +152,7 @@ document.getElementById('searchInput').addEventListener('input', async (event) =
 
 
 // 3. [ CRUD ]
-// Changements de vue (Accueil, CrÉation, Édition)
+// Changements de vue (Accueil, Création, édition)
 const viewCreate = document.getElementById('viewCreate');
 const createContainer = document.getElementById('creationContainer');
 const viewHome = document.getElementById('viewHome');
@@ -167,7 +165,7 @@ const editGameNegative = document.getElementById('editGameNegative');
 const viewStatistics = document.getElementById('viewStatistics');
 const statisticsContainer = document.getElementById('statisticsContainer');
 
-// GÉrer les clics sur les boutons Éditer et Supprimer
+// Gérer les clics sur les boutons éditer et Supprimer
 document.getElementById('tableBody').addEventListener('click', (e) => {
     const editBtn = e.target.closest('.edit-btn');
     const deleteBtn = e.target.closest('.delete-btn');
@@ -184,10 +182,10 @@ document.getElementById('tableBody').addEventListener('click', (e) => {
         createContainer.style.display = 'none';
         editContainer.style.display = 'flex';
 
-        // Store the game ID in a data attribute on the form
+        // Garder l'ID du jeu à éditer dans un attribut de données du formulaire
         editForm.setAttribute('data-game-id', gameId);
 
-        // Fetch game data to populate the form
+        // Charger les données du jeu à éditer
         fetch(`http://localhost:3000/search/${gameId}`)
             .then(response => {
                 if (!response.ok) {
@@ -202,7 +200,7 @@ document.getElementById('tableBody').addEventListener('click', (e) => {
                 editGameNegative.value = game.negative || 0;
             })
             .catch(error => {
-                console.error('Erreur lors de la rÉcupÉration des donnÉes du jeu pour l\'Édition:', error);
+                console.error('Erreur lors de la récupération des données du jeu pour l\'édition:', error);
             });
     }
     
@@ -211,7 +209,7 @@ document.getElementById('tableBody').addEventListener('click', (e) => {
         const gameId = deleteBtn.getAttribute('data-id');
         console.log('Supprimer le jeu:', gameId);
         
-        // Add delete functionality here
+        // Confirmer la suppression
         if (confirm('Êtes-vous sûr de vouloir supprimer ce jeu?')) {
             deleteGame(gameId);
         }
@@ -229,14 +227,14 @@ async function deleteGame(gameId) {
             throw new Error(`Erreur HTTP! Statut: ${response.status}`);
         }
         
-        // Refresh the game list
+        // Rafraîchir la liste des jeux après la suppression
         location.reload();
     } catch (error) {
         console.error('Erreur de suppression:', error);
     }
 }
 
-// GÉrer les changements de vue
+// Gérer les changements de vue
 viewCreate.addEventListener('click', () => {
     dataContainer.style.display = 'none';
     viewCreate.style.display = 'none';
@@ -261,11 +259,11 @@ viewStatistics.addEventListener('click', () => {
     editContainer.style.display = 'none';
     statisticsContainer.style.display = 'flex';
     
-    // Load statistics when viewing the page
+    // Charger les statistiques par défaut (avis positifs)
     fetchStatistics('positive');
 });
 
-// GÉrer la soumission des formulaires de crÉation
+// Gérer la soumission des formulaires de création
 const creationForm = document.getElementById('creationForm');
 creationForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -298,7 +296,7 @@ creationForm.addEventListener('submit', async (event) => {
     }
 });
 
-// GÉrer la soumission du formulaire d'Édition
+// Gérer la soumission du formulaire d'édition
 const editForm = document.getElementById('editingForm');
 editForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -331,18 +329,18 @@ editForm.addEventListener('submit', async (event) => {
         
         console.log('Game updated successfully');
         
-        // Clear the form after successful submission
+        // Nettoyer le formulaire et l'attribut de données
         editForm.reset();
         editForm.removeAttribute('data-game-id');
         
-        // Return to home view and refresh the game list
+        // Retour à la vue principale
         dataContainer.style.display = 'flex';
         viewCreate.style.display = 'block';
         viewHome.style.display = 'none';
         createContainer.style.display = 'none';
         editContainer.style.display = 'none';
         
-        // Refresh the game list
+        // Rafraîchir la liste des jeux
         location.reload();
     } catch (error) {
         console.error('Error updating game:', error);
@@ -361,17 +359,17 @@ async function fetchStatistics(variable = 'positive') {
         }
         const data = await response.json();
 
-        // Afficher le graphique avec les statistiques rÉcupÉrÉes
+        // Afficher le graphique avec les statistiques récupérées
         const graphElement = document.getElementById('statisticsGraph');
         if (graphElement) {
             graphElement.src = `data:image/png;base64,${data.image_base64}`;
         }
 
-        // InterprÉter les statistiques textuelles
+        // Interpréter les statistiques textuelles
         interpretStatistics(data.stats, variable);
 
     } catch (error) {
-        console.error('Erreur lors de la rÉcupÉration des statistiques:', error);
+        console.error('Erreur lors de la récupération des statistiques:', error);
     }
 }
 function interpretStatistics(stats, variable) {
@@ -379,11 +377,11 @@ function interpretStatistics(stats, variable) {
     const interpretationElement = document.getElementById('statisticsInterpretation');
     if (interpretationElement) {
         interpretationElement.innerHTML = `
-            <p><strong>InterprÉtation des statistiques pour "${variable}":</strong></p>
+            <p><strong>Interprétation des statistiques pour "${variable}":</strong></p>
             <ul>
                 <li><strong>Moyenne</strong> (${mean.toFixed(2)}): La valeur moyenne des avis ${variable} pour les jeux.</li>
-                <li><strong>MÉdiane</strong> (${median.toFixed(2)}): La valeur centrale des avis ${variable}, indiquant que la moitiÉ des jeux ont plus et l'autre moitiÉ moins d'avis ${variable}.</li>
-                <li><strong>Écart-type</strong> (${std_dev.toFixed(2)}): Mesure de la dispersion des avis ${variable} autour de la moyenne. Un Écart-type ÉlevÉ indique une grande variabilitÉ.</li>
+                <li><strong>Médiane</strong> (${median.toFixed(2)}): La valeur centrale des avis ${variable}, indiquant que la moitié des jeux ont plus et l'autre moitié moins d'avis ${variable}.</li>
+                <li><strong>écart-type</strong> (${std_dev.toFixed(2)}): Mesure de la dispersion des avis ${variable} autour de la moyenne. Un écart-type élevé indique une grande variabilité.</li>
                 <li><strong>Valeur minimale</strong> (${min}): Le jeu avec le moins d'avis ${variable}.</li>
                 <li><strong>Valeur maximale</strong> (${max}): Le jeu avec le plus d'avis ${variable}.</li>
             </ul>
