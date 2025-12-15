@@ -10,6 +10,7 @@
     <button id="viewCreate" class="crud-btn create-btn"><i class="fa-solid fa-plus"></i></button>
     <button id="viewHome" class="crud-btn create-btn"><i class="fa-solid fa-eye"></i></button>
     <button id="viewStatistics" class="crud-btn stats-btn"><i class="fa-solid fa-chart-bar"></i></button>
+    <button id="viewML" class="crud-btn ml-btn"><i class="fa-solid fa-brain"></i></button>
     <div id="logoHeader">
         <a href="index.html" class="header-link">
             <h1>Rad-dar</h1>
@@ -23,10 +24,11 @@
                 <input type="checkbox" id="modeToggle">
                 <span class="slider round"></span>
             </label>
-           <div class="search-bar">
+           <div class="search-bar" id="searchBar">
                 <input type="text" id="searchInput" class="search-input" placeholder="Recherche...">
                 <div id="autocompleteList" class="autocomplete-items"></div>
             </div>
+            <button id="classificationGeneration" class="crud-btn"><i class="fa-solid fa-chart-pie"></i></button>
         </div>
         
         <div class="results">
@@ -84,6 +86,28 @@
             <img src="" alt="" id="statisticsGraph">
         </div>
         <div id="statisticsInterpretation" class="statistics-interpretation"></div>
+    </div>
+
+    <div id="mlContainer" class="container crud-container">
+        <h2>Classification & Clustering Machine Learning</h2>
+        <div class="ml-buttons">
+            <button id="btnRandomForest" class="ml-model-btn">
+                <i class="fa-solid fa-tree"></i> Random Forest (Développeurs)
+            </button>
+            <button id="btnXGBoost" class="ml-model-btn">
+                <i class="fa-solid fa-rocket"></i> XGBoost (Pertinence)
+            </button>
+            <button id="btnKMeans" class="ml-model-btn">
+                <i class="fa-solid fa-circle-nodes"></i> K-Means (Clustering)
+            </button>
+            <button id="btnAllModels" class="ml-model-btn ml-all-btn">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Tous les modèles
+            </button>
+        </div>
+        <div id="mlLoading" class="ml-loading" style="display: none;">
+            <i class="fa-solid fa-spinner fa-spin"></i> Analyse en cours...
+        </div>
+        <div id="mlResults" class="ml-results"></div>
     </div>
 
     <script src="https://kit.fontawesome.com/d29c8e5768.js" crossorigin="anonymous"></script>

@@ -98,15 +98,89 @@ async function vectorSearchGames(query) {
 
 // Gérer le mode de recherche (simple vs vectorielle)
 const searchModeToggle = document.getElementById('modeToggle');
+const searchBar = document.getElementById('searchBar');
+const generateClassificationBtn = document.getElementById('classificationGeneration');
 searchModeToggle.addEventListener('change', () => {
     const isVectorSearch = searchModeToggle.checked;
     const searchInput = document.getElementById('searchInput');
     if (isVectorSearch) {
+        searchBar.style.width = 'calc(100% - 150px)';
+        generateClassificationBtn.style.visibility = 'visible';
         searchInput.setAttribute('data-search-mode', 'vector');
         searchInput.placeholder = 'Recherche vectorielle...';
     } else {
+        searchBar.style.width = 'calc(100% - 100px)';
+        generateClassificationBtn.style.visibility = 'collapse';
         searchInput.setAttribute('data-search-mode', 'simple');
         searchInput.placeholder = 'Recherche simple...';
+    }
+});
+
+// Gérer le clic sur le bouton de génération de classification ML
+generateClassificationBtn.addEventListener('click', async () => {
+    const searchInput = document.getElementById('searchInput');
+    const query = searchInput.value.trim();
+    
+    if (!query) {
+        alert('Veuillez entrer une requête de recherche avant de générer les classifications.');
+        return;
+    }
+    
+    // Afficher le container ML
+    dataContainer.style.display = 'none';
+    viewCreate.style.display = 'none';
+    viewHome.style.display = 'block';
+    createContainer.style.display = 'none';
+    editContainer.style.display = 'none';
+    statisticsContainer.style.display = 'none';
+    mlContainer.style.display = 'flex';
+    
+    // Afficher le chargement
+    showMLLoading();
+    document.getElementById('mlResults').innerHTML = `
+        <div class="ml-info">
+            <h3>🔍 Analyse basée sur la recherche: "${query}"</h3>
+            <p>Recherche vectorielle en cours et génération des classifications ML...</p>
+        </div>
+    `;
+    
+    try {
+        // D'abord effectuer la recherche vectorielle
+        const searchResults = await vectorSearchGames(query);
+        
+        if (searchResults.length === 0) {
+            hideMLLoading();
+            document.getElementById('mlResults').innerHTML = `
+                <div class="ml-error">
+                    <i class="fa-solid fa-exclamation-triangle"></i>
+                    Aucun jeu trouvé pour la requête "${query}". 
+                    Essayez avec un autre terme de recherche.
+                </div>
+            `;
+            return;
+        }
+        
+        // Afficher les résultats de la recherche
+        document.getElementById('mlResults').innerHTML = `
+            <div class="ml-info">
+                <h3>🔍 Recherche: "${query}"</h3>
+                <p>${searchResults.length} jeu(x) trouvé(s). Génération des classifications ML...</p>
+            </div>
+        `;
+        
+        // Maintenant exécuter tous les modèles ML avec la requête de recherche
+        await fetchAllMLModels(query);
+        
+    } catch (error) {
+        hideMLLoading();
+        console.error('Erreur lors de la génération des classifications:', error);
+        document.getElementById('mlResults').innerHTML = `
+            <div class="ml-error">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Erreur lors de la génération des classifications ML pour "${query}".
+                Vérifiez que les services sont démarrés.
+            </div>
+        `;
     }
 });
 
@@ -171,6 +245,8 @@ const editGamePositive = document.getElementById('editGamePositive');
 const editGameNegative = document.getElementById('editGameNegative');
 const viewStatistics = document.getElementById('viewStatistics');
 const statisticsContainer = document.getElementById('statisticsContainer');
+const viewML = document.getElementById('viewML');
+const mlContainer = document.getElementById('mlContainer');
 
 // Gérer les clics sur les boutons éditer et Supprimer
 document.getElementById('tableBody').addEventListener('click', (e) => {
@@ -249,6 +325,7 @@ viewCreate.addEventListener('click', () => {
     createContainer.style.display = 'flex';
     editContainer.style.display = 'none';
     statisticsContainer.style.display = 'none';
+    mlContainer.style.display = 'none';
 });
 viewHome.addEventListener('click', () => {
     dataContainer.style.display = 'flex';
@@ -257,6 +334,7 @@ viewHome.addEventListener('click', () => {
     createContainer.style.display = 'none';
     editContainer.style.display = 'none';
     statisticsContainer.style.display = 'none';
+    mlContainer.style.display = 'none';
 });
 viewStatistics.addEventListener('click', () => {
     dataContainer.style.display = 'none';
@@ -265,9 +343,19 @@ viewStatistics.addEventListener('click', () => {
     createContainer.style.display = 'none';
     editContainer.style.display = 'none';
     statisticsContainer.style.display = 'flex';
+    mlContainer.style.display = 'none';
     
     // Charger les statistiques par défaut (avis positifs)
     fetchStatistics('positive');
+});
+viewML.addEventListener('click', () => {
+    dataContainer.style.display = 'none';
+    viewCreate.style.display = 'none';
+    viewHome.style.display = 'block';
+    createContainer.style.display = 'none';
+    editContainer.style.display = 'none';
+    statisticsContainer.style.display = 'none';
+    mlContainer.style.display = 'flex';
 });
 
 // Gérer la soumission des formulaires de création
@@ -395,3 +483,346 @@ function interpretStatistics(stats, variable) {
         `;
     }
 }
+
+
+
+// 5. [ MACHINE LEARNING ]
+// Fonction pour afficher le chargement
+function showMLLoading() {
+    document.getElementById('mlLoading').style.display = 'block';
+    document.getElementById('mlResults').innerHTML = '';
+}
+
+function hideMLLoading() {
+    document.getElementById('mlLoading').style.display = 'none';
+}
+
+// Fonction pour afficher les résultats Random Forest
+function displayRandomForestResults(data) {
+    const resultsDiv = document.getElementById('mlResults');
+    let html = `
+        <div class="ml-model-result">
+            <h3><i class="fa-solid fa-tree"></i> ${data.model}</h3>
+            <div class="ml-metrics">
+                <div class="metric">
+                    <span class="metric-label">Précision:</span>
+                    <span class="metric-value">${(data.accuracy * 100).toFixed(2)}%</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Développeurs classifiés:</span>
+                    <span class="metric-value">${data.developers_found}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Jeux analysés:</span>
+                    <span class="metric-value">${data.total_games}</span>
+                </div>
+            </div>
+            <div class="ml-graph">
+                <img src="data:image/png;base64,${data.image_base64}" alt="Random Forest Results">
+            </div>
+            <div class="ml-games-list">
+                <h4>Jeux représentatifs par développeur :</h4>
+                <table class="ml-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Développeur</th>
+                            <th>Positifs</th>
+                            <th>Négatifs</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    data.games_by_developer.forEach(game => {
+        html += `
+            <tr>
+                <td>${game.name}</td>
+                <td>${game.developer}</td>
+                <td>${game.positive}</td>
+                <td>${game.negative}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    resultsDiv.innerHTML += html;
+}
+
+// Fonction pour afficher les résultats XGBoost
+function displayXGBoostResults(data) {
+    const resultsDiv = document.getElementById('mlResults');
+    let html = `
+        <div class="ml-model-result">
+            <h3><i class="fa-solid fa-rocket"></i> XGBoost - Prédiction du Score de Pertinence</h3>
+            <div class="ml-metrics">
+                <div class="metric">
+                    <span class="metric-label">R² Score:</span>
+                    <span class="metric-value">${data.r2_score.toFixed(4)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Erreur Moyenne Absolue (MAE):</span>
+                    <span class="metric-value">${data.mae.toFixed(2)}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Erreur Quadratique Moyenne (MSE):</span>
+                    <span class="metric-value">${data.mse.toFixed(2)}</span>
+                </div>
+            </div>
+            <div class="ml-graph">
+                <img src="data:image/png;base64,${data.image_base64}" alt="XGBoost Results">
+            </div>
+            <div class="ml-games-list">
+                <h4>Jeux par Score de Pertinence:</h4>
+                <table class="ml-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Développeur</th>
+                            <th>Positifs</th>
+                            <th>Score Prédit</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    data.top_games.slice(0, 10).forEach(game => {
+        html += `
+            <tr>
+                <td>${game.name}</td>
+                <td>${game.developer}</td>
+                <td>${game.positive}</td>
+                <td>${game.predicted_score.toFixed(2)}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    resultsDiv.innerHTML += html;
+}
+
+// Fonction pour afficher les résultats K-Means
+function displayKMeansResults(data) {
+    const resultsDiv = document.getElementById('mlResults');
+    let html = `
+        <div class="ml-model-result">
+            <h3><i class="fa-solid fa-circle-nodes"></i> K-Means - Clustering Thématique</h3>
+            <div class="ml-metrics">
+                <div class="metric">
+                    <span class="metric-label">Nombre de Clusters:</span>
+                    <span class="metric-value">${data.n_clusters}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Jeu de référence:</span>
+                    <span class="metric-value">${data.reference_game}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Cluster de référence:</span>
+                    <span class="metric-value">${data.reference_cluster}</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Jeux analysés:</span>
+                    <span class="metric-value">${data.total_games_analyzed}</span>
+                </div>
+            </div>
+            <div class="ml-graph">
+                <img src="data:image/png;base64,${data.image_base64}" alt="K-Means Results">
+            </div>
+            <div class="ml-games-list">
+                <h4>Jeux du même cluster que "${data.reference_game}":</h4>
+                <table class="ml-table">
+                    <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Développeur</th>
+                            <th>Positifs</th>
+                            <th>Négatifs</th>
+                            <th>Cluster</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    data.cluster_games.forEach(game => {
+        html += `
+            <tr>
+                <td>${game.name}</td>
+                <td>${game.developer}</td>
+                <td>${game.positive}</td>
+                <td>${game.negative}</td>
+                <td>${game.cluster}</td>
+            </tr>
+        `;
+    });
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    resultsDiv.innerHTML += html;
+}
+
+// Fonctions pour appeler les API ML
+async function fetchRandomForest(searchQuery = null) {
+    showMLLoading();
+    try {
+        const url = searchQuery 
+            ? `http://localhost:5002/ml/random-forest?search=${encodeURIComponent(searchQuery)}`
+            : 'http://localhost:5002/ml/random-forest';
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+        }
+        const data = await response.json();
+        hideMLLoading();
+        displayRandomForestResults(data);
+    } catch (error) {
+        hideMLLoading();
+        console.error('Erreur Random Forest:', error);
+        document.getElementById('mlResults').innerHTML = `
+            <div class="ml-error">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Erreur lors de l'exécution du modèle Random Forest. 
+                Assurez-vous que le service ML est démarré sur le port 5002.
+            </div>
+        `;
+    }
+}
+
+async function fetchXGBoost(searchQuery = null) {
+    showMLLoading();
+    try {
+        const url = searchQuery 
+            ? `http://localhost:5002/ml/xgboost?search=${encodeURIComponent(searchQuery)}`
+            : 'http://localhost:5002/ml/xgboost';
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+        }
+        const data = await response.json();
+        hideMLLoading();
+        displayXGBoostResults(data);
+    } catch (error) {
+        hideMLLoading();
+        console.error('Erreur XGBoost:', error);
+        document.getElementById('mlResults').innerHTML = `
+            <div class="ml-error">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Erreur lors de l'exécution du modèle XGBoost.
+                Assurez-vous que le service ML est démarré sur le port 5002.
+            </div>
+        `;
+    }
+}
+
+async function fetchKMeans(searchQuery = null) {
+    showMLLoading();
+    try {
+        const url = searchQuery 
+            ? `http://localhost:5002/ml/kmeans?search=${encodeURIComponent(searchQuery)}`
+            : 'http://localhost:5002/ml/kmeans';
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+        }
+        const data = await response.json();
+        hideMLLoading();
+        displayKMeansResults(data);
+    } catch (error) {
+        hideMLLoading();
+        console.error('Erreur K-Means:', error);
+        document.getElementById('mlResults').innerHTML = `
+            <div class="ml-error">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Erreur lors de l'exécution du modèle K-Means.
+                Assurez-vous que le service ML est démarré sur le port 5002.
+            </div>
+        `;
+    }
+}
+
+async function fetchAllMLModels(searchQuery = null) {
+    showMLLoading();
+    try {
+        const url = searchQuery 
+            ? `http://localhost:5002/ml/all?search=${encodeURIComponent(searchQuery)}`
+            : 'http://localhost:5002/ml/all';
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Erreur HTTP! Statut: ${response.status}`);
+        }
+        const data = await response.json();
+        hideMLLoading();
+        
+        // Afficher la requête de recherche si présente
+        if (data.search_query) {
+            document.getElementById('mlResults').innerHTML = `
+                <div class="ml-info">
+                    <h3>🔍 Analyse basée sur la recherche: "${data.search_query}"</h3>
+                    <p>Classification ML des jeux correspondants...</p>
+                </div>
+            `;
+        }
+        
+        // Afficher tous les résultats
+        if (data.random_forest && !data.random_forest.error) {
+            displayRandomForestResults(data.random_forest);
+        }
+        if (data.xgboost && !data.xgboost.error) {
+            displayXGBoostResults(data.xgboost);
+        }
+        if (data.kmeans && !data.kmeans.error) {
+            displayKMeansResults(data.kmeans);
+        }
+    } catch (error) {
+        hideMLLoading();
+        console.error('Erreur lors de l\'exécution de tous les modèles:', error);
+        document.getElementById('mlResults').innerHTML = `
+            <div class="ml-error">
+                <i class="fa-solid fa-exclamation-triangle"></i>
+                Erreur lors de l'exécution des modèles ML.
+                Assurez-vous que le service ML est démarré sur le port 5002.
+            </div>
+        `;
+    }
+}
+
+// Event listeners pour les boutons ML
+document.getElementById('btnRandomForest').addEventListener('click', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchQuery = searchInput.value.trim();
+    fetchRandomForest(searchQuery || null);
+});
+
+document.getElementById('btnXGBoost').addEventListener('click', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchQuery = searchInput.value.trim();
+    fetchXGBoost(searchQuery || null);
+});
+
+document.getElementById('btnKMeans').addEventListener('click', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchQuery = searchInput.value.trim();
+    fetchKMeans(searchQuery || null);
+});
+
+document.getElementById('btnAllModels').addEventListener('click', () => {
+    const searchInput = document.getElementById('searchInput');
+    const searchQuery = searchInput.value.trim();
+    fetchAllMLModels(searchQuery || null);
+});
